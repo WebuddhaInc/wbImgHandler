@@ -12,8 +12,10 @@ $path   = preg_replace('/\.+\//','',$_REQUEST['f']);
 $width  = (int)$_REQUEST['w'];
 $height = (int)$_REQUEST['h'];
 
-if (strpos($path, __DIR__) !== 0)
+define('DIR', substr($_SERVER['SCRIPT_FILENAME'], 0, strlen($_SERVER['SCRIPT_FILENAME']) - strlen(basename(__FILE__))));
+if (strpos($path, DIR) !== 0) {
   exit;
+}
 
 $file_extension = strtolower(substr(strrchr($path,"."),1));
 switch( $file_extension ) {
