@@ -8,6 +8,7 @@ if( !function_exists('inspect') ){
   }
 }
 
+$cache  = true;
 $path   = preg_replace('/\.+\//','',$_REQUEST['f']);
 $width  = (int)$_REQUEST['w'];
 $height = (int)$_REQUEST['h'];
@@ -28,19 +29,29 @@ switch( $file_extension ) {
 }
 header('Content-type: ' . $ctype);
 
-if (!$width || !$height) {
+if (!$width && !$height) {
   echo file_get_contents($path);
 }
 
 else if (is_readable($path)){
-  $cache_file = substr($path, 0, strlen($path)-strlen($file_extension)).'resized-'.$width.'x'.$height.'.'.$file_extension;
-  if (is_readable($cache_file)){
+  if ($width && $height)
+    $cache_file = substr($path, 0, strlen($path)-strlen($file_extension)).'resized-w'.$width.'h'.$height.'.'.$file_extension;
+  else if ($width)
+    $cache_file = substr($path, 0, strlen($path)-strlen($file_extension)).'resized-w'.$width.'.'.$file_extension;
+  else
+    $cache_file = substr($path, 0, strlen($path)-strlen($file_extension)).'resized-h'.$height.'.'.$file_extension;
+  if ($cache && is_readable($cache_file)){
     echo file_get_contents($cache_file);
   }
   else {
     $image = new \Eventviva\ImageResize( $path );
-    $image->resizeToBestFit($width, $height);
-    if ($fh = fopen($cache_file, 'w+')) {
+    if ($width && $height)
+      $image->resizeToBestFit($width, $height);
+    else if($width)
+      $image->resizeToWidth($width);
+    else
+      $image->resizeToHeight($height);
+    if ($cache && $fh = fopen($cache_file, 'w+')) {
       fwrite($fh, (string)$image);
       fclose($fh);
     }
