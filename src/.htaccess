@@ -1,0 +1,9 @@
+IndexIgnore *
+Options +FollowSymlinks
+Options -Indexes
+RewriteEngine On
+
+RewriteCond %{QUERY_STRING} w=\d+ [OR]
+RewriteCond %{QUERY_STRING} h=\d+ [OR]
+RewriteCond %{QUERY_STRING} scale=\d+
+RewriteRule ^(.*)(.jpg|.jpeg|.png|.gif|.bmp)$ wbimghandler.php?f=%{REQUEST_FILENAME} [QSA,L]
